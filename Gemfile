@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# ruby '2.3.3'
+ruby '2.7.2'
 
 # Updated for CVE-2018-16476: https://nvd.nist.gov/vuln/detail/CVE-2018-16476.
 gem 'activejob', '>= 4.2.11'
@@ -27,7 +27,7 @@ gem "loofah", ">= 2.2.3"
 
 gem 'jquery-rails'
 
-gem 'fastlane', '>= 2.126.0', '< 3.0.0'
+gem 'fastlane',  git: 'https://github.com/LcTwisk/fastlane'
 
 gem 'bootstrap-sass', '~> 3.4.1'
 

@@ -48,13 +48,12 @@ class BoardingService
       @test_flight_groups.each do |group|
         beta_group_id = group.id
 
-        beta_testers = [{
+        attributes = {
           email: email,
-          first_name: first_name,
-          last_name: last_name
-        }]
-
-        Spaceship::ConnectAPI.post_bulk_beta_tester_assignments(beta_group_id: beta_group_id, beta_testers: beta_testers)
+          firstName: first_name,
+          lastName: last_name
+        }
+        Spaceship::ConnectAPI.post_beta_tester_assignment(beta_group_ids: [beta_group_id], attributes: attributes)
       end
       add_tester_response.message = t(:message_success_live)
       add_tester_response.type = "success"
@@ -72,18 +71,17 @@ class BoardingService
       error_message = []
 
       error_message << "Environment variable `ITC_APP_ID` required" if @app_id.to_s.length == 0
-      error_message << "Environment variable `ITC_USER` or `FASTLANE_USER` required" if @user.to_s.length == 0
-      error_message << "Environment variable `ITC_PASSWORD` or `FASTLANE_PASSWORD`" if @password.to_s.length == 0
       raise error_message.join("\n") if error_message.length > 0
 
-      spaceship = Spaceship::Tunes.login(@user, @password)
-      spaceship.select_team
+      
+      token = Spaceship::ConnectAPI::Token.create()
+      
+      Spaceship::ConnectAPI.token = token
 
-      @app ||= Spaceship::Tunes::Application.find(@app_id)      
-      raise "Could not find app with ID #{app_id}" if @app.nil?
+      @app ||= Spaceship::ConnectAPI::App.find(@app_id)
 
       if tester_group_names
-        @test_flight_groups = Spaceship::ConnectAPI.get_beta_groups(filter: { app: @app.apple_id }).select do |group|
+        @test_flight_groups = Spaceship::ConnectAPI.get_beta_groups(filter: { app: @app_id }).select do |group|
           tester_group_names.include?(group.name)
         end
 
