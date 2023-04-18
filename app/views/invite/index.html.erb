@@ -14,7 +14,7 @@
 
 <div class="container" style="text-align: center; max-width: 350px; padding-top: 20px;">
   <% if @metadata[:icon_url] %>
-    <%= image_tag @metadata[:icon_url], class: "appIcon", style: "margin-bottom: 30px;" %>
+    <%= image_tag @metadata[:icon_url], class: "appIcon", style: "margin-bottom: 30px; max-width: 120px" %>
   <% else %>
     <div style="margin-bottom: 20px"></div>
   <% end %>

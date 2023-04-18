@@ -9,6 +9,7 @@ class BoardingService
   include AbstractController::Translation
 
   attr_accessor :app
+  attr_accessor :app_icon
   attr_accessor :app_id
   attr_accessor :user
   attr_accessor :password
@@ -20,12 +21,8 @@ class BoardingService
   attr_accessor :imprint_url
 
   def initialize(app_id: ENV["ITC_APP_ID"],
-                   user: ENV["ITC_USER"] || ENV["FASTLANE_USER"],
-               password: ENV["ITC_PASSWORD"] || ENV["FASTLANE_PASSWORD"],
      tester_group_names: ENV["ITC_APP_TESTER_GROUPS"])
-    @app_id = app_id
-    @user = user
-    @password = password
+    @app_id = app_id 
 
     groups = tester_group_names.to_s.split(/\s*,\s*/)
     @tester_group_names = groups unless groups.empty?
@@ -78,7 +75,11 @@ class BoardingService
       
       Spaceship::ConnectAPI.token = token
 
-      @app ||= Spaceship::ConnectAPI::App.find(@app_id)
+      @app ||= Spaceship::ConnectAPI::App.get(app_id: app_id)
+
+      build = Spaceship::ConnectAPI.get_builds(sort: "-uploadedDate", includes: "preReleaseVersion", filter: { app: app.id }, limit: 1).first
+
+      @app_icon ||= build.icon_asset_token["templateUrl"].gsub("{w}", "120").gsub("{h}", "120").gsub("{f}", "png")
 
       if tester_group_names
         @test_flight_groups = Spaceship::ConnectAPI.get_beta_groups(filter: { app: @app_id }).select do |group|

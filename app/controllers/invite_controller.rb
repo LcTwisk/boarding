@@ -7,12 +7,7 @@ class InviteController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def index
-    if boarding_service.user and boarding_service.password
-      # default
-      @email = params[:email]
-    else
-      render 'environment_error'
-    end
+    @email = params[:email]
   rescue => ex
     update_spaceship_message
     raise ex
@@ -100,12 +95,10 @@ class InviteController < ApplicationController
     end
 
     def app_metadata
-      Rails.cache.fetch('appMetadata', expires_in: 10.minutes) do
         {
-          icon_url: boarding_service.app.app_icon_preview_url,
+          icon_url: boarding_service.app_icon,
           title: boarding_service.app.name
         }
-      end
     end
 
     def set_app_details
